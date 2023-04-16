@@ -1,3 +1,4 @@
+# Importing Libraries
 import pickle
 import pandas as pd
 import scipy.sparse as sparse
@@ -5,6 +6,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
 
+
+# File Names
 TRAIN_FILE_NAME = '../data/snli_1.0_train.txt'
 TEST_FILE_NAME = '../data/snli_1.0_test.txt'
 
@@ -12,6 +15,7 @@ VECTORIZER_FILE_NAME = './Models/Tfidf_vectorizer.pickle'
 MODEL_FILE_NAME = './Models/LR_Model.pickle'
 
 RESULT_FILE_NAME = './Results/LR_Results.txt'
+
 
 # Save file to pickle
 def save(data, filename):
@@ -25,9 +29,8 @@ def load(filename):
         data = pickle.load(file)
     return data
 
-
 # Write Results to file
-def write_results_to_file(sentence1, sentence2, predicted_labels) :
+def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels) :
     # Mapping the numerical representation of tag to corresponding tag
     labels = {
         0: 'entailment',
@@ -35,8 +38,10 @@ def write_results_to_file(sentence1, sentence2, predicted_labels) :
         2: 'contradiction'
     }
     with open(RESULT_FILE_NAME, 'w') as file :
-        for sent1, sent2, label in zip(sentence1, sentence2, predicted_labels) :
-            file.write(f'{labels[label]} || {sent1} || {sent2}\n')
+        file.write(f'Predicted_Labels || Actual_Labels || Sentence1 || Sentence1\n')
+        file.write(f'-----------------------------------------------------------\n')
+        for sent1, sent2, actual_label, predicted_label in zip(sentence1, sentence2, actual_labels, predicted_labels) :
+            file.write(f'{labels[predicted_label]} || {labels[actual_label]} || {sent1} || {sent2}\n')
 
 
 # Preprocessing the file.
@@ -51,7 +56,7 @@ def preprocess_file(filename):
 
     # Dropping records which doesn't have label, or column have None value
     dataframe = dataframe[dataframe['gold_label'] != '-']
-    dataframe = dataframe.dropna(subset=['sentence2'])
+    dataframe = dataframe.dropna()
 
     # Mapping the corresponding tag to numerical representation
     labels = {
@@ -130,7 +135,7 @@ def handle_test_part():
     test_labels_predicted = model.predict(test_features)
 
     print(f'Writing Results to File : {RESULT_FILE_NAME}')
-    write_results_to_file(test_sentence1, test_sentence2, test_labels_predicted)
+    write_results_to_file(test_sentence1, test_sentence2, test_labels, test_labels_predicted)
 
     test_accuracy = accuracy_score(test_labels, test_labels_predicted)
     print("-------------------------------------------------------")
