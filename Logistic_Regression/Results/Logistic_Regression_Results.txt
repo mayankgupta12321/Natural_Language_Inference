@@ -1,3 +1,5 @@
+Test Accuracy : 0.6626
+-----------------------------------------------------------
 Predicted_Labels || Actual_Labels || Sentence1 || Sentence1
 -----------------------------------------------------------
 contradiction || neutral || this church choir sings to the masses as they sing joyous songs from the book at a church. || the church has cracks in the ceiling.

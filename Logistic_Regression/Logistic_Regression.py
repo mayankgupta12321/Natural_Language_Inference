@@ -12,9 +12,9 @@ TRAIN_FILE_NAME = '../data/snli_1.0_train.txt'
 TEST_FILE_NAME = '../data/snli_1.0_test.txt'
 
 VECTORIZER_FILE_NAME = './Models/Tfidf_vectorizer.pickle'
-MODEL_FILE_NAME = './Models/LR_Model.pickle'
+MODEL_FILE_NAME = './Models/Logistic_Regression_Model.pickle'
 
-RESULT_FILE_NAME = './Results/LR_Results.txt'
+RESULT_FILE_NAME = './Results/Logistic_Regression_Results.txt'
 
 
 # Save file to pickle
@@ -30,7 +30,7 @@ def load(filename):
     return data
 
 # Write Results to file
-def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels) :
+def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels, test_accuracy) :
     # Mapping the numerical representation of tag to corresponding tag
     labels = {
         0: 'entailment',
@@ -38,6 +38,8 @@ def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels)
         2: 'contradiction'
     }
     with open(RESULT_FILE_NAME, 'w') as file :
+        file.write(f'Test Accuracy : {test_accuracy:1.4f}\n')
+        file.write(f'-----------------------------------------------------------\n')
         file.write(f'Predicted_Labels || Actual_Labels || Sentence1 || Sentence1\n')
         file.write(f'-----------------------------------------------------------\n')
         for sent1, sent2, actual_label, predicted_label in zip(sentence1, sentence2, actual_labels, predicted_labels) :
@@ -133,11 +135,12 @@ def handle_test_part():
     model = load(MODEL_FILE_NAME)
 
     test_labels_predicted = model.predict(test_features)
+    
+    test_accuracy = accuracy_score(test_labels, test_labels_predicted)
 
     print(f'Writing Results to File : {RESULT_FILE_NAME}')
-    write_results_to_file(test_sentence1, test_sentence2, test_labels, test_labels_predicted)
+    write_results_to_file(test_sentence1, test_sentence2, test_labels, test_labels_predicted, test_accuracy)
 
-    test_accuracy = accuracy_score(test_labels, test_labels_predicted)
     print("-------------------------------------------------------")
     print(f'Test Accuracy : {test_accuracy:1.4f}')
     print("-------------------------------------------------------")
