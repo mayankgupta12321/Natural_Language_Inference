@@ -26,8 +26,8 @@ CHAR2IDX_FILE_NAME = './PreProcessed_data/char2idx.pickle'
 TRAIN_PREPROCESS_FILE_NAME = './PreProcessed_data/train_preprocessed.pickle'
 TEST_PREPROCESS_FILE_NAME = './PreProcessed_data/test_preprocessed.pickle'
 
-MODEL_FILE_NAME = './Models/BiLSTM_Model.h5'
-RESULT_FILE_NAME = './Results/BiLSTM_Results.txt'
+MODEL_FILE_NAME = './Models/BiLSTM_Char_Level_Model.h5'
+RESULT_FILE_NAME = './Results/BiLSTM_Char_Level_Results.txt'
 
 
 # Hyperparameters
@@ -57,7 +57,7 @@ def load(filename):
 
 
 # Write Results to file
-def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels) :
+def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels, test_accuracy) :
     # Mapping the numerical representation of tag to corresponding tag
     labels = {
         0: 'entailment',
@@ -65,6 +65,8 @@ def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels)
         2: 'contradiction'
     }
     with open(RESULT_FILE_NAME, 'w') as file :
+        file.write(f'Test Accuracy : {test_accuracy:1.4f}\n')
+        file.write(f'-----------------------------------------------------------\n')
         file.write(f'Predicted_Labels || Actual_Labels || Sentence1 || Sentence1\n')
         file.write(f'-----------------------------------------------------------\n')
         for sent1, sent2, actual_label, predicted_label in zip(sentence1, sentence2, actual_labels, predicted_labels) :
@@ -347,12 +349,11 @@ def handle_test_part() :
     test_labels = test_labels_encoded.argmax(axis = 1)
     test_labels_predicted = predicted_prob.argmax(axis = 1)
 
-    
+    test_accuracy = accuracy_score(test_labels, test_labels_predicted)
 
     print(f'Writing Results to File : {RESULT_FILE_NAME}')
-    write_results_to_file(sentence1_data, sentence2_data, test_labels, test_labels_predicted)
+    write_results_to_file(sentence1_data, sentence2_data, test_labels, test_labels_predicted, test_accuracy)
 
-    test_accuracy = accuracy_score(test_labels, test_labels_predicted)
     print("-------------------------------------------------------")
     print(f'Test Accuracy : {test_accuracy:1.4f}')
     print("-------------------------------------------------------")
@@ -362,22 +363,22 @@ def handle_test_part() :
 
 # for inference part from 2 input sentences.
 def handle_inference_part():
+    print("-------------------------------------------------------")
     sentence1 = input('Enter Sentence1 : ')
     sentence2 = input('Enter Sentence2 : ')
 
-    # Loading Embeddings
+    # Loading char2idx dictionary
     char2idx = load(CHAR2IDX_FILE_NAME)
-    embedding_matrix = load(EMBEDDINGS_FILE_NAME)
     
     # Loading the model
     model = load_model(MODEL_FILE_NAME)
 
     # Vectorizing sentences
-    sentence1_precessed = process_sentence(sentence1)
-    sentence2_precessed = process_sentence(sentence2)
+    sentence1_processed = process_sentence(sentence1)
+    sentence2_processed = process_sentence(sentence2)
 
-    sentence1_vectorised = vectorise_sentences([sentence1_precessed], char2idx)
-    sentence2_vectorised = vectorise_sentences([sentence2_precessed], char2idx)
+    sentence1_vectorised = vectorise_sentences([sentence1_processed], char2idx)
+    sentence2_vectorised = vectorise_sentences([sentence2_processed], char2idx)
 
     # Predicting
     predicted_prob = model.predict(x = [sentence1_vectorised, sentence2_vectorised])
