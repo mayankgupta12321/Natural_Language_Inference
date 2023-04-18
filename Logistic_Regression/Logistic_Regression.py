@@ -8,13 +8,11 @@ from sklearn.metrics import classification_report, accuracy_score
 
 
 # File Names
-TRAIN_FILE_NAME = '../data/snli_1.0_train.txt'
-TEST_FILE_NAME = '../data/snli_1.0_test.txt'
-
-VECTORIZER_FILE_NAME = './Models/Tfidf_vectorizer.pickle'
-MODEL_FILE_NAME = './Models/Logistic_Regression_Model.pickle'
-
-RESULT_FILE_NAME = './Results/Logistic_Regression_Results.txt'
+TRAIN_FILE_NAME = None
+TEST_FILE_NAME = None
+VECTORIZER_FILE_NAME = None
+MODEL_FILE_NAME = None
+RESULT_FILE_NAME = None
 
 
 # Save file to pickle
@@ -37,7 +35,7 @@ def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels,
         1: 'neutral',
         2: 'contradiction'
     }
-    with open(RESULT_FILE_NAME, 'w') as file :
+    with open(RESULT_FILE_NAME, 'w', encoding = 'utf-8') as file :
         file.write(f'Test Accuracy : {test_accuracy:1.4f}\n')
         file.write(f'-----------------------------------------------------------\n')
         file.write(f'Predicted_Labels || Actual_Labels || Sentence1 || Sentence1\n')
@@ -51,7 +49,7 @@ def preprocess_file(filename):
     print('Preprocessing File.')
 
     # Reading the file
-    dataframe = pd.read_csv(filename, sep="\t")
+    dataframe = pd.read_csv(filename, sep="\t", encoding = 'utf-8', on_bad_lines = 'skip')
 
     # Extracting below 3 columns
     dataframe = dataframe[['gold_label', 'sentence1', 'sentence2']]
@@ -82,8 +80,7 @@ def preprocess_file(filename):
 
 # For Training Part
 def handle_train_part():
-    train_labels, train_sentence1, train_sentence2 = preprocess_file(
-        TRAIN_FILE_NAME)
+    train_labels, train_sentence1, train_sentence2 = preprocess_file(TRAIN_FILE_NAME)
 
     print('Vectorizing Sentences.')
     # Vectorizing sentences
@@ -118,8 +115,7 @@ def handle_train_part():
 
 # For Testing Part
 def handle_test_part():
-    test_labels, test_sentence1, test_sentence2 = preprocess_file(
-        TEST_FILE_NAME)
+    test_labels, test_sentence1, test_sentence2 = preprocess_file(TEST_FILE_NAME)
 
     # Vectorizing sentences
     vectorizer = load(VECTORIZER_FILE_NAME)
@@ -159,9 +155,9 @@ def handle_inference_part():
     # Vectorizing sentences
     vectorizer = load(VECTORIZER_FILE_NAME)
     sentence1_vectorised = vectorizer.transform([sentence1])
-    sentence1_vectorised = vectorizer.transform([sentence2])
+    sentence2_vectorised = vectorizer.transform([sentence2])
 
-    test_features = sparse.hstack((sentence1_vectorised, sentence1_vectorised))
+    test_features = sparse.hstack((sentence1_vectorised, sentence2_vectorised))
 
     # Loading the model
     model = load(MODEL_FILE_NAME)
@@ -176,27 +172,63 @@ def handle_inference_part():
     }
 
     print("-------------------------------------------------------")
+    print(f'sentence1 : {sentence1}')
+    print(f'sentence2 : {sentence2}')
     print(f'Predicted Label : {labels[label_predicted[0]]}')
     print("-------------------------------------------------------")
+
+
+# initialising File Names
+def init_file_names(dataset_name) :
+    global TRAIN_FILE_NAME, TEST_FILE_NAME, VECTORIZER_FILE_NAME
+    global MODEL_FILE_NAME, RESULT_FILE_NAME
+
+    TRAIN_FILE_NAME = f'../data/{dataset_name}_1.0_train.txt'
+    TEST_FILE_NAME = f'../data/{dataset_name}_1.0_test.txt'
+
+    VECTORIZER_FILE_NAME = f'./Models/Tfidf_vectorizer_{dataset_name}.pickle'
+
+    MODEL_FILE_NAME = f'./Models/Logistic_Regression_Model_{dataset_name}.pickle'
+    RESULT_FILE_NAME = f'./Results/Logistic_Regression_Results_{dataset_name}.txt'
 
 
 # Driver Code
 if __name__ == '__main__':
 
+    # Dataset Selection
     print("-------------------------------------------------------")
+    print("Which Dataset you want to use ?")
+    print("1. SNLI")
+    print("2. MULTINI")
+    ch1 = int(input('Enter you choice : '))
+
+    if ch1 == 1:  # snli
+        init_file_names('snli')
+
+    elif ch1 == 2:  # multinli
+        init_file_names('multinli')
+
+    else:
+        print("Invalid Input.")
+        exit()
+
+    # Operation Selection
+    print("-------------------------------------------------------")
+    print("Which Operation you want to perform ?")
     print("1. Train Model")
     print("2. Test Model on Test file")
     print("3. Test Model on Manual Sentences")
-    ch = int(input('Enter you choice : '))
+    ch2 = int(input('Enter you choice : '))
 
-    if ch == 1:  # train
+    if ch2 == 1:  # train
         handle_train_part()
 
-    elif ch == 2:  # test
+    elif ch2 == 2:  # test
         handle_test_part()
 
-    elif ch == 3:  # inference
+    elif ch2 == 3:  # inference
         handle_inference_part()
 
     else:
         print("Invalid Input.")
+        exit()
