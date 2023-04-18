@@ -15,19 +15,19 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
 # File Names
-TRAIN_FILE_NAME = '../data/snli_1.0_train.txt'
-DEV_FILE_NAME = '../data/snli_1.0_dev.txt'
-TEST_FILE_NAME = '../data/snli_1.0_test.txt'
-
 GLOVE_EMBEDDING_FILE_NAME = '../data/glove.6B/glove.6B.300d.txt'
 
-EMBEDDINGS_FILE_NAME = './PreProcessed_data/char_emeddings.pickle'
-CHAR2IDX_FILE_NAME = './PreProcessed_data/char2idx.pickle'
-TRAIN_PREPROCESS_FILE_NAME = './PreProcessed_data/train_preprocessed.pickle'
-TEST_PREPROCESS_FILE_NAME = './PreProcessed_data/test_preprocessed.pickle'
+TRAIN_FILE_NAME = None
+DEV_FILE_NAME = None
+TEST_FILE_NAME = None
 
-MODEL_FILE_NAME = './Models/BiLSTM_Char_Level_Model.h5'
-RESULT_FILE_NAME = './Results/BiLSTM_Char_Level_Results.txt'
+EMBEDDINGS_FILE_NAME = None
+CHAR2IDX_FILE_NAME = None
+TRAIN_PREPROCESS_FILE_NAME = None
+TEST_PREPROCESS_FILE_NAME = None
+
+MODEL_FILE_NAME = None
+RESULT_FILE_NAME = None
 
 
 # Hyperparameters
@@ -64,7 +64,7 @@ def write_results_to_file(sentence1, sentence2, actual_labels, predicted_labels,
         1: 'neutral',
         2: 'contradiction'
     }
-    with open(RESULT_FILE_NAME, 'w') as file :
+    with open(RESULT_FILE_NAME, 'w', encoding = 'utf-8') as file :
         file.write(f'Test Accuracy : {test_accuracy:1.4f}\n')
         file.write(f'-----------------------------------------------------------\n')
         file.write(f'Predicted_Labels || Actual_Labels || Sentence1 || Sentence1\n')
@@ -86,7 +86,7 @@ def preprocess_file(filename):
     print(f'Doing Basic Preprocessing of File {filename}.')
 
     # Reading the file
-    dataframe = pd.read_csv(filename, sep="\t")
+    dataframe = pd.read_csv(filename, sep="\t", encoding = 'utf-8', on_bad_lines = 'skip')
 
     # Extracting below 3 columns
     dataframe = dataframe[['gold_label', 'sentence1', 'sentence2']]
@@ -284,7 +284,7 @@ def train_model(model, X1, X2, y, batch_size, epochs, validation_split, model_fi
 # Loading Test sentences
 def load_test_sentences(filename) :
     # Reading the file
-    dataframe = pd.read_csv(filename, sep="\t")
+    dataframe = pd.read_csv(filename, sep="\t", encoding = 'utf-8', on_bad_lines = 'skip')
     
     # Extracting below 3 columns
     dataframe = dataframe[['gold_label', 'sentence1', 'sentence2']]
@@ -398,10 +398,48 @@ def handle_inference_part():
     print("-------------------------------------------------------")
 
 
+# initialising File Names
+def init_file_names(dataset_name) :
+    global TRAIN_FILE_NAME, DEV_FILE_NAME, TEST_FILE_NAME
+    global EMBEDDINGS_FILE_NAME, CHAR2IDX_FILE_NAME, TRAIN_PREPROCESS_FILE_NAME, TEST_PREPROCESS_FILE_NAME
+    global  MODEL_FILE_NAME, RESULT_FILE_NAME
+    
+    TRAIN_FILE_NAME = f'../data/{dataset_name}_1.0_train.txt'
+    DEV_FILE_NAME = f'../data/{dataset_name}_1.0_dev.txt'
+    TEST_FILE_NAME = f'../data/{dataset_name}_1.0_test.txt'
+
+    EMBEDDINGS_FILE_NAME = f'./PreProcessed_data/char_emeddings_{dataset_name}.pickle'
+    CHAR2IDX_FILE_NAME = f'./PreProcessed_data/char2idx_{dataset_name}.pickle'
+    TRAIN_PREPROCESS_FILE_NAME = f'./PreProcessed_data/train_preprocessed_{dataset_name}.pickle'
+    TEST_PREPROCESS_FILE_NAME = f'./PreProcessed_data/test_preprocessed_{dataset_name}.pickle'
+
+    MODEL_FILE_NAME = f'./Models/BiLSTM_Char_Level_Model_{dataset_name}.h5'
+    RESULT_FILE_NAME = f'./Results/BiLSTM_Char_Level_Results_{dataset_name}.txt'
+
+
 # Driver Code
 if __name__ == '__main__':
-
+    
+    # Dataset Selection
     print("-------------------------------------------------------")
+    print("Which Dataset you want to use ?")
+    print("1. SNLI")
+    print("2. MULTINI")
+    ch1 = int(input('Enter you choice : '))
+
+    if ch1 == 1:  # snli
+        init_file_names('snli')
+
+    elif ch1 == 2:  # multinli
+        init_file_names('multinli')
+
+    else:
+        print("Invalid Input.")
+        exit()
+
+    # Operation Selection
+    print("-------------------------------------------------------")
+    print("Which Operation you want to perform ?")
     print("1. Preprocess Data")
     print("2. Train Model")
     print("3. Test Model on Test file")
