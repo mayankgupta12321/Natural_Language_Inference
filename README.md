@@ -31,7 +31,7 @@ python BiLSTM_Char_Level_Model.py
 - It will prompt for asking, which dataset you want to use. `Press 1 for SNLI, 2 for MultiNLI`
 - Then It will prompt for asking, whether you want to Preprocess Data, train model, test model, or inference on input sentences.
 `Press 1 for Preprocess Data, 2 for Train Model, 3 for Test Model, 4 for Inference on Input Sentences`
-- You can do these operations sequentially. i.e. first train the model, then test the model.
+- You can do these operations sequentially. i.e. first preprocess the data, then train the model, then test the model.
 ---------------------------------------------------------------------------------------
 
 ### BiLSTM Word Level Embedding
@@ -45,7 +45,7 @@ python BiLSTM_Word_Level_Model
 - It will prompt for asking, which dataset you want to use. `Press 1 for SNLI, 2 for MultiNLI`
 - Then It will prompt for asking, whether you want to Preprocess Data, train model, test model, or inference on input sentences.
 `Press 1 for Preprocess Data, 2 for Train Model, 3 for Test Model, 4 for Inference on Input Sentences`
-- You can do these operations sequentially. i.e. first train the model, then test the model.
+- You can do these operations sequentially. i.e. first preprocess the data, then train the model, then test the model.
 ---------------------------------------------------------------------------------------
 
 ### BERT Model
@@ -59,7 +59,7 @@ python BERT_Model.py
 - It will prompt for asking, which dataset you want to use. `Press 1 for SNLI, 2 for MultiNLI`
 - Then It will prompt for asking, whether you want to Preprocess Data, train model, test model, or inference on input sentences.
 `Press 1 for Preprocess Data, 2 for Train Model, 3 for Test Model, 4 for Inference on Input Sentences`
-- You can do these operations sequentially. i.e. first train the model, then test the model.
+- You can do these operations sequentially. i.e. first preprocess the data, then train the model, then test the model.
 ---------------------------------------------------------------------------------------
 
 #### Directory Structure
