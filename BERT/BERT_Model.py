@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -40,9 +41,9 @@ TRAINING_EPOCHS = 5
 WARMUP_PERCENT = 0.2
 
 # Checking if cuda available
-# DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-# print(f"Running on Device : {DEVICE}")
-DEVICE = "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Running on Device : {DEVICE}")
+# DEVICE = "cpu"
 
 
 #  extracting tokenizer from
@@ -400,8 +401,14 @@ def handle_test_part():
     print("-------------------------------------------------------")
     print(f'Test Accuracy : {test_accuracy:1.4f}')
     print("-------------------------------------------------------")
-    print(classification_report(test_labels, test_labels_predicted, digits=4))
+    print('Classification Report : \n')
+    print(classification_report(test_labels, test_labels_predicted, digits = 4, target_names = ['Entailment', 'Neutral', 'Contradiction']))
     print("-------------------------------------------------------")
+    print('Confusion Matrix : \n')
+    cm = confusion_matrix(test_labels, test_labels_predicted, labels=[0, 1, 2])
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Entailment', 'Neutral', 'Contradiction'])
+    disp.plot()
+    plt.show()
 
 
 # Process sentences

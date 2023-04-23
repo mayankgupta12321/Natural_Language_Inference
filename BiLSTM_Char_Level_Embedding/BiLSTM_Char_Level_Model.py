@@ -6,7 +6,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.optimizers import Adam
@@ -357,8 +358,14 @@ def handle_test_part() :
     print("-------------------------------------------------------")
     print(f'Test Accuracy : {test_accuracy:1.4f}')
     print("-------------------------------------------------------")
-    print(classification_report(test_labels, test_labels_predicted, digits = 4))
+    print('Classification Report : \n')
+    print(classification_report(test_labels, test_labels_predicted, digits = 4, target_names = ['Entailment', 'Neutral', 'Contradiction']))
     print("-------------------------------------------------------")
+    print('Confusion Matrix : \n')
+    cm = confusion_matrix(test_labels, test_labels_predicted, labels=[0, 1, 2])
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Entailment', 'Neutral', 'Contradiction'])
+    disp.plot()
+    plt.show()
 
 
 # for inference part from 2 input sentences.
