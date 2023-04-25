@@ -1,6 +1,6 @@
 # Natural_Language_Inference
 
-READ ONLY LINK : [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:f:/g/personal/mayank_gupta_students_iiit_ac_in/EiP2mA6tMMxFkn1hYUZA6dYBm7DtlKlV7Egya8JaDHkoPg)
+Preprocessed Data, Trained Models, and Results are placed [here↗️](https://iiitaphyd-my.sharepoint.com/:f:/g/personal/mayank_gupta_students_iiit_ac_in/EiP2mA6tMMxFkn1hYUZA6dYBm7DtlKlV7Egya8JaDHkoPg)
 
 - Do not change directory structure.
 - Before executing below commands make sure you are in home directory of the project.
